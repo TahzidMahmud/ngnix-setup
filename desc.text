@@ -1,0 +1,241 @@
+add new user in linux
+---------------------
+
+adduser username
+pass:
+
+giving privilages 
+-----------------
+usermod -aG sudo username (giving  sudo )
+mkdir /home/username/.ssh (giving ssh ) authorized key path(/root/.ssh/authorized_keys) to go user cat then path 
+
+copying auithorized ssh key to new user folder for access
+
+cp /root/.ssh/authorized_keys  /home/username/.ssh/authorized_keys
+
+then go to new user folder cd /home/username
+ seeing owner
+ ------------
+ ls -la
+
+then chane owner ship 
+---------------------
+chown -R foldername:ownername .ssh/ 
+
+chmod 700 .ssh  
+chmod 600 authorized_keys
+
+enable ssh firewall 
+------------------
+ufw allow OpenSSH 
+ufw enable
+
+connect through ssh 
+-------------------
+ssh username@ip
+
+removing password access
+------------------------
+
+sudo nano /etc/ssh/sshd_config 
+
+
+PermitRootLoin no 
+PasswordAuthentication no
+
+restating a service (sudo systemctl restart service_name)
+then  sudo systemctl restart ssh
+then  sudo systemctl restart sshd
+
+update server
+-------------
+sudo apt update && sudo apt upgrade
+
+installing ngnix and ssl 
+------------------------
+sudo apt install ngnix certbot python3-certbot-ngnix ( certbot for free ssl )
+
+
+make new dir to ip serve 
+----------------------
+sudo mkdir /var/www/demo-website
+
+chnage owner ship again for this folder 
+
+
+ go to sites available
+ ------------------------
+
+ sudo nano etc/ngnix/sites-available/demo-website
+
+ then copy the code 
+ ------------------
+
+
+ server{
+    listen 80;
+    server_name www.my-damo.com my-demo.com; # for main domain 
+    
+    server_name demo.subdomain.com; # for subdomain
+
+
+    gzip on;
+    gzip_proxied any;
+    gzip_types application/javascript application/x-javascript text/css text/javascript;
+    gzip_comp_level 6; # between 1-9
+    gzip_buffers 16 8k;
+    gzip_min_lenght 256;
+
+    #to serve static file requests  to the folder , here after loaction key word part is the location  before '{' this
+    location /_next/static/ {
+        alias /var/www/folder-of-the-website(demo-website)/.next/static/;
+        expires 365d;
+        access_log off;
+    }
+
+    location / {
+        proxy_pass http:/127.0.0.1:3000;
+        proxy_http_version 1.1;
+        #for web socket
+        #---------------
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_headr Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cacahe_bypass $http_upgrade; 
+    }
+ }
+
+
+makig symlink from sites available to sites enabled 
+---------------------------------------------------
+
+to do this 1st remove deafult site 
+sudo rm /etc/ngnix/sites-available/deafult.
+then 
+
+sudo ln -s /etc/ngnix/sites-available/demo-website /etc/ngnix/sites-enabled/demo-website 
+
+restat gnnix 
+-------------
+sudo systemctl restart ngnix
+ 
+
+ removig folder 
+ -------------
+ sudo rn -rf folder_name/
+
+
+ allow fire wall for 80 and 8070
+ -------------------------------
+ sudo ufw allow "Ngnix Full"  
+ 
+
+install nvm 
+
+pm2  
+
+for ssl
+-----
+
+sudo certbod --ngnix -d demo.com
+
+
+==========================
+laravel part 
+==========================
+
+cd ~/.ssh
+ ssh-keygen
+ then give key_name  
+cat key_name.pub this will give public key copy and add 
+ vi sshd_config
+  then add
+    Host server key key_name
+    HostName ip address
+    User root
+    IdentifyFile ~/.ssh/laravel
+    :wq
+then ssh key_name
+ppa of ngnix 
+--------------
+https://launchpad.net/~nginx/+archive/ubuntu/stable
+sudo apt install -y nginx
+
+php ppa 
+--------
+https://launchpad.net/~ondrej/+archive/ubuntu/php
+
+installing php and php extentions 
+---------------------------------
+sudo apt install -y php7.4-fpm php7.4-cli php7.4-mcrypt php7.4-gd php7.4-mysql php7.4-pgsql php7.4-imap php7.4-memcached php7.4-mbstring php7.4-xml php7.4-curl php7.4-bcmath php7.4-sqlite3 php7.4-xdebug php7.4-ctype php7.4-zip
+
+installing composer 
+-------------------
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+
+php composer-setup.php --filename=composer --install-dir=/usr/bin (after php extenstion command rest is user to make composer in env variables)
+
+in sites available 
+-----------------
+root /home/user_name/laraver_project/public;
+ then in next part for php files using
+ ------------------------------------
+index index.html index.php;
+
+then in location 
+------------------
+location / {
+   try_files $uri $uri/ /index.php?$query_string;
+
+}
+location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    #with php-fpm or other unix sockets
+    fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+    #with php-cgi or other tcp socket
+    #fastcgi_pass 127.0.0.1:9000;
+}
+
+
+ to check a configuration file is correct or not 
+ -----------------------------------------------
+ sudo ngnix -t
+
+ sudo service ngnix reload
+
+to check process owner ship 
+---------------------------
+ps aux | grep php 
+
+change permission from www-data to user  
+---------------------------------------
+
+vi /etc/php/7.4/fpm/pool.d/www.conf
+
+then chnage user= user_name and group-user_name
+:wq
+then restart sudo service php7.4-fpm restart
+
+installing mysql 
+----------------
+sudo apt install mysql-server -y
+
+secure mysql  
+--------------
+sudo mysql_secure_installation
+
+mysql -u root -p
+
+CREATE DATABASE laravel_db;
+
+CREATE USER 'laravel_user'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON laravel_db.* TO 'laravel_user'@'localhost';
+
+FLUSH PRIVILEGES;
+
+exit;
+
+su user 
