@@ -7,7 +7,8 @@ pass:
 giving privilages 
 -----------------
 usermod -aG sudo username (giving  sudo )
-mkdir /home/username/.ssh (giving ssh ) authorized key path(/root/.ssh/authorized_keys) to go user cat then path 
+mkdir /home/username/.ssh (giving ssh ) authorized key path
+cp (/root/.ssh/authorized_keys) to /home/username/.ssh
 
 copying auithorized ssh key to new user folder for access
 
@@ -20,7 +21,7 @@ then go to new user folder cd /home/username
 
 then chane owner ship 
 ---------------------
-chown -R foldername:ownername .ssh/ 
+chown -R user:group foldername 
 
 chmod 700 .ssh  
 chmod 600 authorized_keys
@@ -51,9 +52,9 @@ update server
 -------------
 sudo apt update && sudo apt upgrade
 
-installing ngnix and ssl 
+installing nginx and ssl 
 ------------------------
-sudo apt install ngnix certbot python3-certbot-ngnix ( certbot for free ssl )
+sudo apt install nginx certbot python3-certbot-nginx ( certbot for free ssl )
 
 
 make new dir to ip serve 
@@ -66,12 +67,12 @@ chnage owner ship again for this folder
  go to sites available
  ------------------------
 
- sudo nano etc/ngnix/sites-available/demo-website
+ sudo nano etc/nginx/sites-available/demo-website
 
  then copy the code 
  ------------------
 
-
+ufw allow 8080/tcp
  server{
     listen 80;
     server_name www.my-damo.com my-demo.com; # for main domain 
@@ -111,14 +112,14 @@ makig symlink from sites available to sites enabled
 ---------------------------------------------------
 
 to do this 1st remove deafult site 
-sudo rm /etc/ngnix/sites-available/deafult.
+sudo rm /etc/nginx/sites-available/deafult.
 then 
 
-sudo ln -s /etc/ngnix/sites-available/demo-website /etc/ngnix/sites-enabled/demo-website 
+sudo ln -s /etc/nginx/sites-available/demo-website /etc/nginx/sites-enabled/demo-website 
 
 restat gnnix 
 -------------
-sudo systemctl restart ngnix
+sudo systemctl restart nginx
  
 
  removig folder 
@@ -126,9 +127,9 @@ sudo systemctl restart ngnix
  sudo rn -rf folder_name/
 
 
- allow fire wall for 80 and 8070
+ allow fire wall for 80 and 8080
  -------------------------------
- sudo ufw allow "Ngnix Full"  
+ sudo ufw allow "Nginx Full"  
  
 
 install nvm 
@@ -138,7 +139,7 @@ pm2
 for ssl
 -----
 
-sudo certbod --ngnix -d demo.com
+sudo certbod --nginx -d demo.com
 
 
 ==========================
@@ -157,7 +158,7 @@ cat key_name.pub this will give public key copy and add
     IdentifyFile ~/.ssh/laravel
     :wq
 then ssh key_name
-ppa of ngnix 
+ppa of nginx 
 --------------
 https://launchpad.net/~nginx/+archive/ubuntu/stable
 sudo apt install -y nginx
@@ -165,17 +166,22 @@ sudo apt install -y nginx
 php ppa 
 --------
 https://launchpad.net/~ondrej/+archive/ubuntu/php
+sudo service nginx status
 
 installing php and php extentions 
 ---------------------------------
 sudo apt install -y php7.4-fpm php7.4-cli php7.4-mcrypt php7.4-gd php7.4-mysql php7.4-pgsql php7.4-imap php7.4-memcached php7.4-mbstring php7.4-xml php7.4-curl php7.4-bcmath php7.4-sqlite3 php7.4-xdebug php7.4-ctype php7.4-zip
+sudo apt install php php-cli php-fpm php-json php-pdo php-mysql php-zip php-gd  php-mbstring php-curl php-xml php-pear php-bcmath
 
 installing composer 
 -------------------
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 
-php composer-setup.php --filename=composer --install-dir=/usr/bin (after php extenstion command rest is user to make composer in env variables)
+php composer-setup.php --filename=composer --install-dir=/usr/bin (after php extenstion command rest is user to make composer in env variables) 
+or this
+-------
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 in sites available 
 -----------------
@@ -201,9 +207,9 @@ location ~ \.php$ {
 
  to check a configuration file is correct or not 
  -----------------------------------------------
- sudo ngnix -t
+ sudo nginx -t
 
- sudo service ngnix reload
+ sudo service nginx reload
 
 to check process owner ship 
 ---------------------------
@@ -239,3 +245,25 @@ FLUSH PRIVILEGES;
 exit;
 
 su user 
+
+
+log in using ssh pem key file 
+-----------------------------
+ssh -i key_file_path user@ip
+
+
+
+removing apacehe2
+-----------------
+$ sudo apt remove apache2
+ sudo apt purge apache2
+
+
+ mysql pass:
+ -----------
+ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '8tFVj9tAHU3-';
+CREATE USER 'glowscam'@'localhost' IDENTIFIED BY '8tFVj9tAHU3-';
+GRANT ALL PRIVILEGES ON glowscam.* TO 'glowscam'@'localhost';
+
+ rm -rf node_modules/
+npm install
