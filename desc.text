@@ -182,7 +182,9 @@ php composer-setup.php --filename=composer --install-dir=/usr/bin (after php ext
 or this
 -------
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
+changing php versions
+---------------------
+update-alternatives --config php
 in sites available 
 -----------------
 root /home/user_name/laraver_project/public;
