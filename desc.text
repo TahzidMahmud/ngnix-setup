@@ -172,7 +172,7 @@ installing php and php extentions
 ---------------------------------
 sudo apt install -y php7.4-fpm php7.4-cli php7.4-mcrypt php7.4-gd php7.4-mysql php7.4-pgsql php7.4-imap php7.4-memcached php7.4-mbstring php7.4-xml php7.4-curl php7.4-bcmath php7.4-sqlite3 php7.4-xdebug php7.4-ctype php7.4-zip
 sudo apt install php php-cli php-fpm php-json php-pdo php-mysql php-zip php-gd  php-mbstring php-curl php-xml php-pear php-bcmath
-
+update-alternatives --config php
 installing composer 
 -------------------
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
