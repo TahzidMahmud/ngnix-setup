@@ -301,4 +301,5 @@ server {
 }
 git access token url
 ====================
-git clone https://<USERNAME>:<PAT>@<HOST>/<REPO_PATH>.git
+
+git clone https://TahzidMahmud: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@github.com/TahzidMahmud/cosmetics_naive_store_backend.git
