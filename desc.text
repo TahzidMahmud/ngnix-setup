@@ -299,3 +299,6 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
+git access token url
+====================
+git clone https://<USERNAME>:<PAT>@<HOST>/<REPO_PATH>.git
